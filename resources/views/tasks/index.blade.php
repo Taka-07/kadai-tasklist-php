@@ -10,7 +10,7 @@
         <ul>
             @foreach ($tasks as $task)
                 {{-- ["id" => $task->id]　は　"tasks.show"へ送るデータ　("id"が1の場合は1の詳細ページへ行く) --}}
-                <li>{!! link_to_route("tasks.show", $task->id, ["id" => $task->id]) !!} : {{ $task->content }}</li>
+                <li>{!! link_to_route("tasks.show", $task->id, ["id" => $task->id]) !!} : {{ $task->status }} > {{ $task->content }}</li>
             @endforeach
         </ul>
     @endif

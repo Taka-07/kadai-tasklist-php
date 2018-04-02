@@ -16,7 +16,7 @@ class TasksController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // getでmessages/にアクセスされた場合の「一覧表示処理」
+    // getでtasks/にアクセスされた場合の「一覧表示処理」
     public function index()
     {
         $tasks = Task::all();
@@ -34,7 +34,7 @@ class TasksController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    // getでmessages/createにアクセスされた場合の「新規登録画面表示処理」
+    // getでtasks/createにアクセスされた場合の「新規登録画面表示処理」
     public function create()
     {
         $task = new Task;
@@ -50,10 +50,17 @@ class TasksController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // postでmessages/にアクセスされた場合の「新規登録処理」
+    // postでtasks/にアクセスされた場合の「新規登録処理」
     public function store(Request $request)
     {
+        //$thisにはcreate.blade.phpの$taskが入る　9.1
+        $this->validate($request,[
+            "status" => "required|max:10",
+            "content" => "required|max:255",
+        ]);
+        
         $task = new Task;
+        $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
         
@@ -66,12 +73,12 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    // getでmessages/idにアクセスされた場合の「取得表示処理」
+    // getでtasks/idにアクセスされた場合の「取得表示処理」
     public function show($id)
     {
         $task = Task::find($id);
         
-        //Message::find($id) によって1つだけ取得するのでtaskも単数形になる
+        //Task::find($id) によって1つだけ取得するのでtaskも単数形になる
         return view("tasks.show",[
             "task" => $task,
         ]);
@@ -83,7 +90,7 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    // getでmessages/id/editにアクセスされた場合の「更新画面表示処理」
+    // getでtasks/id/editにアクセスされた場合の「更新画面表示処理」
     public function edit($id)
     {
         $task = Task::find($id);
@@ -100,10 +107,16 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    // putまたはpatchでmessages/idにアクセスされた場合の「更新処理」
+    // putまたはpatchでtasks/idにアクセスされた場合の「更新処理」
     public function update(Request $request, $id)
     {
+        $this->validate($request,[
+            "status" => "required|max:10",
+            "content" => "required|max:255",
+        ]);
+        
         $task = Task::find($id);
+        $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
         
@@ -116,7 +129,7 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    // deleteでmessages/idにアクセスされた場合の「削除処理」
+    // deleteでtasks/idにアクセスされた場合の「削除処理」
     public function destroy($id)
     {
         $task = Task::find($id);

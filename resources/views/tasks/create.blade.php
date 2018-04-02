@@ -10,6 +10,9 @@
     {{-- フォームの入力内容は"tasks.store"へ送られ、$requestに入る 8.5 --}}
     {!! Form::model($task, ["route" => "tasks.store"]) !!}
     
+        {!! Form::label("status", "status:") !!}
+        {!! Form::text("status") !!}
+        
         {!! Form::label("content", "タスク:") !!}
         {!! Form::text("content") !!}
         
