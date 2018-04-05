@@ -25,6 +25,8 @@
                 {!! Form::submit("更新", ["class" => "btn btn-default"]) !!}
         
             {!! Form::close() !!}
+            
+            {!! link_to_route("tasks.show", "タスク詳細ページに戻る", ["id" => $task->id], ["class" => "btn btn-default"]) !!}
         </div>
     </div>
 

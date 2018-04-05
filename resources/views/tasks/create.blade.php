@@ -27,6 +27,8 @@
                 {!! Form::submit("投稿", ["class" => "btn btn-primary"]) !!}
         
             {!! Form::close() !!}
+            
+            {!! link_to_route("tasks.index", "タスク一覧に戻る", null, ["class" => "btn btn-default"]) !!}
         </div>
     </div>
 

@@ -16,8 +16,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource("tasks", "TasksController");
-
 // ユーザ登録　Routeで定義した@getRegisterがAuth\AuthControllerにあるgetRegisterアクションと繋がっている
 //getRegister() アクションによって resources/views/auth/register.blade.php を表示
 Route::get("signup", "Auth\AuthController@getRegister")->name("signup.get");
@@ -29,3 +27,14 @@ Route::post("signup", "Auth\AuthController@postRegister")->name("signup.post");
 Route::get("login", "Auth\AuthController@getLogin")->name("login.get");
 Route::post("login", "Auth\AuthController@postLogin")->name("login.post");
 Route::get("logout", "Auth\AuthController@getLogout")->name("logout.get");
+
+/* ログイン認証付きのルーティング
+Route::group() でルーティングのグループを作り、その際に ['middleware' => 'auth'] を加えることで、
+このグループに書かれたルーティングは必ずログイン認証を確認させる
+また、 ['only' => ['index', 'show']] とすることで実装するアクションを絞り込むことが可能
+["middleware" => "auth"]にアクセスしたときapp/Http/Middleware/Authenticate.php の handle()が呼び出される
+*/
+Route::group(["middleware" => "auth"], function() {
+   Route::resource ("users", "UsersController", ["only" => ["index", "show"]]);
+   Route::resource("tasks", "TasksController");
+});
