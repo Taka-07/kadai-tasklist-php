@@ -21,6 +21,14 @@ class AuthController extends Controller
     |
     */
 
+    //トレイト （メソッドをまとめる機能)　6.3
+    /*
+      AuthenticatesAndRegistersUsersのソースコードを見るとuseによって
+      AuthenticatesUsers(ログイン認証),RegistersUsers(ユーザ登録)を定義したメソッドを取り込んでいる
+      RegistersUsers(ユーザ登録のための)トレイトのソースコードにはgetRegister() と postRegister() が定義されている
+      getRegister()にはreturn view('auth.register'); が記述されており、
+      getRegister() アクションはただ単に resources/views/auth/register.blade.php を表示するアクション
+    */
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
     /**
@@ -28,8 +36,24 @@ class AuthController extends Controller
      *
      * @return void
      */
+    
+    //追加
+    //$redirectTo は postRegister() の最後に呼ばれるリダイレクト先のルーティングで、ユーザ登録直後のリダイレクト先の指定になる
+    protected $redirectTo = "/";
+    //ログインページのフォームで間違った情報を送信し、ログイン失敗したときにリダイレクトされるリダイレクト先 ($loginPath)の設定
+    protected $loginPath ="/login";
+    
+    //Contoller の __construct() でミドルウェア(middleware)を設定することができる
+    //Laravel ではミドルウェアは Controller にアクセスする前に事前に確認される条件
     public function __construct()
     {
+        /*
+        getLogoutアクション以外では guest である必要があるという条件を持ったミドルウェアが設定されている
+        guest とは、ログイン認証されていない閲覧者のこと
+        つまり、 getLogout アクション以外ではログイン認証されていないことが必要という条件
+        これを満たさない（既にログインしているのに getLogin アクションにアクセスした場合など）は、指定のリダイレクト先へ飛ばされる
+        指定のリダイレクト先とは、これから私たちが設定する $redirectTo 変数に設定されたルーティングのこと
+        */
         $this->middleware('guest', ['except' => 'getLogout']);
     }
 
@@ -39,6 +63,9 @@ class AuthController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
+     
+    //RegistersUsers トレイトの postRegister メソッドの中身を見ると、 validator() を呼び出しているのがわかる
+    //ユーザ登録の際のフォームデータのバリデーションを行っている
     protected function validator(array $data)
     {
         return Validator::make($data, [
@@ -54,6 +81,9 @@ class AuthController extends Controller
      * @param  array  $data
      * @return User
      */
+     
+    //RegistersUsers トレイトの postRegister メソッドの中身を見ると、 create() を呼び出しているのがわかる
+    //これは create アクションとは違って、 User を create(save) しているアクションになる
     protected function create(array $data)
     {
         return User::create([

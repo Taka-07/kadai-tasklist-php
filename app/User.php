@@ -28,6 +28,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
+    //create() (AuthControllerで使用している)を使って一気にデータを代入する際に$fillable を定義しておく
     protected $fillable = ['name', 'email', 'password'];
 
     /**
