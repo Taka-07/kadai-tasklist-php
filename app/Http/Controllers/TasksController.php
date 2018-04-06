@@ -19,12 +19,15 @@ class TasksController extends Controller
     // getでtasks/にアクセスされた場合の「一覧表示処理」
     public function index()
     {
-        $tasks = Task::all();
+        if (\Auth::check()) {
+            $user = \Auth::user();
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+        }
         
         // return view("tasks.index"は表示したいviewを選択している 8.3
         // [‘tasks’ => $tasks] は tasks.index という View に渡すデータ
         //左側のtasks がビューファイル側で呼び出す変数の名前 index.blade.phpでは$tasksと書く
-       return view("tasks.index",[
+        return view("tasks.index",[
             "tasks" => $tasks,    
         ]);
     }
