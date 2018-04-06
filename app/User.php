@@ -37,4 +37,12 @@ class User extends Model implements AuthenticatableContract,
      * @var array
      */
     protected $hidden = ['password', 'remember_token'];
+    
+    //User から Task をみたとき、複数存在するので、function tasks()のように複数形 tasks でメソッドを定義する
+    public function tasks()
+    {
+        //User のインスタンスが自分の Tasks を取得することができる
+        //$user->tasks()->all() もしくは簡単に $user->tasks で取得できる　($thisには$userが入る)
+        return $this->hasMany(Task::class);
+    }
 }

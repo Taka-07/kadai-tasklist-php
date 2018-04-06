@@ -24,8 +24,8 @@ class TasksController extends Controller
         // return view("tasks.index"は表示したいviewを選択している 8.3
         // [‘tasks’ => $tasks] は tasks.index という View に渡すデータ
         //左側のtasks がビューファイル側で呼び出す変数の名前 index.blade.phpでは$tasksと書く
-        return view("tasks.index",[
-            "tasks" => $tasks,
+       return view("tasks.index",[
+            "tasks" => $tasks,    
         ]);
     }
 
@@ -59,10 +59,11 @@ class TasksController extends Controller
             "content" => "required|max:255",
         ]);
         
-        $task = new Task;
-        $task->status = $request->status;
-        $task->content = $request->content;
-        $task->save();
+        //Task.phpで設定することで利用できるようになる (user_idを設定しないとエラーになる)
+        $request->user()->tasks()->create([
+            "status" => $request->status,
+            "content" => $request->content,
+        ]);
         
         return redirect("/tasks");
     }
@@ -76,12 +77,19 @@ class TasksController extends Controller
     // getでtasks/idにアクセスされた場合の「取得表示処理」
     public function show($id)
     {
-        $task = Task::find($id);
+         if (\Auth::check()) {
+            $user = \Auth::user();
+            $task = $user->tasks()->find($id);
+        }
         
-        //Task::find($id) によって1つだけ取得するのでtaskも単数形になる
-        return view("tasks.show",[
-            "task" => $task,
-        ]);
+            //$taskが自分のタスクだった場合tasks.showへ、違う場合、タスク一覧へ
+            if ($task) {
+                return view("tasks.show",[
+                    "task" => $task,
+                ]); 
+            } else {
+                return redirect("/tasks");
+            }
     }
 
     /**
@@ -93,11 +101,19 @@ class TasksController extends Controller
     // getでtasks/id/editにアクセスされた場合の「更新画面表示処理」
     public function edit($id)
     {
-        $task = Task::find($id);
+        if (\Auth::check()) {
+            $user = \Auth::user();
+            $task = $user->tasks()->find($id);
+        }
         
-        return view("tasks.edit",[
-            "task" => $task,
-        ]);
+            //$taskが自分のタスクだった場合tasks.editへ、違う場合、タスク一覧へ
+            if ($task) {
+                return view("tasks.edit",[
+                    "task" => $task,
+                ]); 
+            } else {
+                return redirect("/tasks");
+            }
     }
 
     /**
@@ -132,8 +148,11 @@ class TasksController extends Controller
     // deleteでtasks/idにアクセスされた場合の「削除処理」
     public function destroy($id)
     {
-        $task = Task::find($id);
-        $task->delete();
+        $task = \App\Task::find($id);
+        
+        if (\Auth::user()->id === $task->user_id) {
+            $task->delete();
+        }
         
         return redirect("/tasks");
     }
